@@ -504,7 +504,7 @@ local function ValidateItem(BoothItem, WantedItem)
     end
 
     if WantedItem.ID:find("All Rarity") then
-        if not BoothItem.Rarity or (BoothItem.Rarity:gsub(" ", "") ~= WantedItem.ID:split(":")[2]:gsub(" ", "") or BoothItem.IsHuge or BoothItem.IsTitanic) or BoothItem.Class ~= "Pet" then
+        if BoothItem.Class ~= "Pet" or not BoothItem.Rarity or (BoothItem.Rarity:gsub(" ", "") ~= WantedItem.ID:split(":")[2]:gsub(" ", "") or BoothItem.IsHuge or BoothItem.IsTitanic) then
             return false
         end
     elseif WantedItem.ID:find("All Class") then
@@ -512,11 +512,11 @@ local function ValidateItem(BoothItem, WantedItem)
             return false
         end
     elseif WantedItem.ID:find("RAP Above") then
-        if not BoothItem.RAP or (tonumber(BoothItem.RAP) < tonumber(RemoveSuffix(WantedItem.ID:split(":")[2]:gsub(" ", "")))) then
+        if BoothItem.Class ~= "Pet" or not BoothItem.RAP or (tonumber(BoothItem.RAP) < tonumber(RemoveSuffix(WantedItem.ID:split(":")[2]:gsub(" ", "")))) then
             return false
         end
     elseif WantedItem.ID:find("Difficulty Above") then
-        if not BoothItem.Difficulty or (BoothItem.Difficulty and tonumber(BoothItem.Difficulty) < tonumber(RemoveSuffix(WantedItem.ID:split(":")[2]:gsub(" ", "")))) then
+        if BoothItem.Class ~= "Pet" or not BoothItem.Difficulty or (tonumber(BoothItem.Difficulty) < tonumber(RemoveSuffix(WantedItem.ID:split(":")[2]:gsub(" ", "")))) then
             return false
         end
     elseif WantedItem.ID:find("Name Find") then
@@ -524,7 +524,7 @@ local function ValidateItem(BoothItem, WantedItem)
         if not BoothItem.ID:find(Match) then
             return false
         end
-    elseif WantedItem.ID ~= BoothItem.ID and not WantedItem.ID:find("All ") then
+    elseif WantedItem.ID ~= BoothItem.ID then
         return false
     end
 
