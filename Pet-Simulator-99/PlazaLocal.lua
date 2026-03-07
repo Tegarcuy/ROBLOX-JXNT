@@ -504,7 +504,7 @@ local function ValidateItem(BoothItem, WantedItem)
     end
 
     if WantedItem.ID:find("All Rarity") then
-        if BoothItem.Class ~= "Pet" or not BoothItem.Rarity or (BoothItem.Rarity:gsub(" ", "") ~= WantedItem.ID:split(":")[2]:gsub(" ", "") or BoothItem.IsHuge or BoothItem.IsTitanic) then
+        if BoothItem.Class ~= "Pet" or not BoothItem.Rarity or (BoothItem.Rarity:gsub(" ", "") ~= WantedItem.ID:split(":")[2]:gsub(" ", "")) then
             return false
         end
     elseif WantedItem.ID:find("All Class") then
@@ -1152,15 +1152,17 @@ local Servers = {}
 local function SearchTerminal(Class, Encoded, SearchQuery)
     local FoundServer;
     local Data = Encoded
+    
+    -- Skip jika item tidak punya data lengkap
+    if not SearchQuery.id or (Class ~= "Misc" and Class ~= "Card" and not SearchQuery.tn) then
+        return
+    end
+    
     pcall(function()
         FoundServer = game.ReplicatedStorage.Network.TradingTerminal_Search:InvokeServer(Class, Data, nil, false) or nil
     end)
     if not FoundServer then
-        local IsGolden = SearchQuery.pt and SearchQuery.pt == 1 and "true" or "false"
-        local IsRainbow = SearchQuery.pt and SearchQuery.pt == 2 and "true" or "false"
-        local IsShiny = SearchQuery.sh and SearchQuery.sh and "true" or "false"
-        local HasTier = SearchQuery.tn and SearchQuery.tn and "true" or "false"
-        return warn("[Plaza Plus]: Incorrect Item Data! Cannot search for item: "..SearchQuery.id, "| Class: "..Class.." | IsRainbow: "..IsRainbow.." | IsGolden: "..IsGolden.." | IsShiny: "..IsShiny.." | Tier: "..HasTier)
+        return
     end
     if type(FoundServer) == "table" and FoundServer["place_id"] and FoundServer["job_id"] then
         if (CanUsePro and table.find({PS99.Pro, PETSGO.Pro}, FoundServer["place_id"])) or (not UI["Only Pro"] and table.find({PS99.Normal, PETSGO.Normal}, FoundServer["place_id"])) then
